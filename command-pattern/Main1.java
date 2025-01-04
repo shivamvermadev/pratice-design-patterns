@@ -43,7 +43,10 @@ public class Main1 {
         SimpleRemoteControl remote = new SimpleRemoteControl();
         Light light = new Light();
         LightOnCommand lightOnCommand = new LightOnCommand(light);
-        remote.setCommand(lightOnCommand);
+        Command lightOnCommand2 = () -> {
+            light.on();
+        };
+        remote.setCommand(light::on);
         remote.buttonWasPressed();
     }
 }
