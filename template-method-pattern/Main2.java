@@ -1,5 +1,5 @@
 /**
- * Template method pattern:
+ * Template method pattern: this pattern defines the step of an algorithm and allows subclasses to provide the implementation for one or more steps.
  * prepareRecipe is our template method as it serves a template for an algorithm. In this case algorithm for making caffeinated beverages.
  * In the template each step of algorithm is represented by a method.
  * Some method are handled by this class and some by the subclasses.
