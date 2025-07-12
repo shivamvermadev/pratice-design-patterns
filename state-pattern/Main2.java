@@ -190,8 +190,7 @@ class HasQuarterState implements State {
     @Override
     public void turnCrank() {
         System.out.println("you turned crank...");
-        // int winner = randomWinner.nextInt(10);
-        int winner = 0;
+        int winner = randomWinner.nextInt(10);
 
         if (winner == 0 && gumballMachine.getCount() > 1) {
             gumballMachine.setState(gumballMachine.getWinnerState());
