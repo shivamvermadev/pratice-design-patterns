@@ -1,7 +1,12 @@
+import java.util.Random;
+
 interface State {
     void insertQuarter();
+
     void ejectQuarter();
+
     void turnCrank();
+
     void dispense();
 }
 
@@ -10,6 +15,7 @@ class GumballMachine {
     State noQuarterState;
     State hasQuarterState;
     State soldState;
+    State winnerState;
 
     State state;
     int count = 0;
@@ -19,6 +25,7 @@ class GumballMachine {
         noQuarterState = new NoQuarterState(this);
         hasQuarterState = new HasQuarterState(this);
         soldState = new SoldState(this);
+        winnerState = new WinnerState(this);
 
         this.count = numberGumBalls;
         if (numberGumBalls > 0) {
@@ -56,6 +63,10 @@ class GumballMachine {
         return noQuarterState;
     }
 
+    public State getHasQuarterState() {
+        return hasQuarterState;
+    }
+
     public State getSoldState() {
         return soldState;
     }
@@ -67,12 +78,40 @@ class GumballMachine {
     public State getSoldOutState() {
         return soldOutState;
     }
+
+    public State getWinnerState() {
+        return winnerState;
+    }
+
+    @Override
+    public String toString() {
+        StringBuffer result = new StringBuffer();
+        result.append("\nMighty Gumball, Inc.");
+        result.append("\nJava-enabled Standing Gumball Model #2004\n");
+        result.append("Inventory: " + count + " gumball");
+        if (count != 1) {
+            result.append("s");
+        }
+        result.append("\nMachine is ");
+        if (state instanceof SoldOutState) {
+            result.append("sold out");
+        } else if (state instanceof NoQuarterState) {
+            result.append("waiting for quarter");
+        } else if (state instanceof HasQuarterState) {
+            result.append("waiting for turn of crank");
+        } else if (state instanceof SoldState) {
+            result.append("delivering a gumball");
+        }
+        result.append("\n");
+        return result.toString();
+    }
+
 }
 
 class NoQuarterState implements State {
 
     GumballMachine gumballMachine;
-    
+
     public NoQuarterState(GumballMachine gumballMachine) {
         this.gumballMachine = gumballMachine;
     }
@@ -80,7 +119,7 @@ class NoQuarterState implements State {
     @Override
     public void insertQuarter() {
         System.out.println("you inserted a quarter");
-        gumballMachine.setState(gumballMachine.getNoQuarterState());
+        gumballMachine.setState(gumballMachine.getHasQuarterState());
     }
 
     @Override
@@ -102,7 +141,7 @@ class NoQuarterState implements State {
 class SoldOutState implements State {
 
     GumballMachine gumballMachine;
-    
+
     public SoldOutState(GumballMachine gumballMachine) {
         this.gumballMachine = gumballMachine;
     }
@@ -131,7 +170,8 @@ class SoldOutState implements State {
 class HasQuarterState implements State {
 
     GumballMachine gumballMachine;
-    
+    Random randomWinner = new Random(System.currentTimeMillis());
+
     public HasQuarterState(GumballMachine gumballMachine) {
         this.gumballMachine = gumballMachine;
     }
@@ -150,7 +190,14 @@ class HasQuarterState implements State {
     @Override
     public void turnCrank() {
         System.out.println("you turned crank...");
-        gumballMachine.setState(gumballMachine.getSoldState());
+        // int winner = randomWinner.nextInt(10);
+        int winner = 0;
+
+        if (winner == 0 && gumballMachine.getCount() > 1) {
+            gumballMachine.setState(gumballMachine.getWinnerState());
+        } else {
+            gumballMachine.setState(gumballMachine.getSoldState());
+        }
     }
 
     @Override
@@ -162,7 +209,7 @@ class HasQuarterState implements State {
 class SoldState implements State {
 
     GumballMachine gumballMachine;
-    
+
     public SoldState(GumballMachine gumballMachine) {
         this.gumballMachine = gumballMachine;
     }
@@ -194,6 +241,65 @@ class SoldState implements State {
     }
 }
 
+class WinnerState implements State {
+
+    GumballMachine gumballMachine;
+
+    public WinnerState(GumballMachine gumballMachine) {
+        this.gumballMachine = gumballMachine;
+    }
+
+    @Override
+    public void insertQuarter() {
+        System.out.println("Error inserting quarter");
+    }
+
+    @Override
+    public void ejectQuarter() {
+        System.out.println("Error ejecting quarter");
+    }
+
+    @Override
+    public void turnCrank() {
+        System.out.println("Error turning crank");
+    }
+
+    @Override
+    public void dispense() {
+        gumballMachine.releaseBall();
+        if (gumballMachine.getCount() == 0) {
+            gumballMachine.setState(gumballMachine.getSoldOutState());
+        } else {
+            gumballMachine.releaseBall();
+            System.out.println("You are winner, you got two balls for your quarter");
+
+            if (gumballMachine.getCount() > 0) {
+                gumballMachine.setState(gumballMachine.getNoQuarterState());
+            } else {
+                System.out.println("Oops out of gumball");
+                gumballMachine.setState(gumballMachine.getSoldOutState());
+            }
+        }
+    }
+
+}
+
 public class Main2 {
-    
+    public static void main(String[] args) {
+        GumballMachine machine = new GumballMachine(5);
+        System.out.println(machine);
+
+        machine.insertQuarter();
+        machine.turnCrank();
+
+        System.out.println(machine);
+
+        machine.insertQuarter();
+        machine.turnCrank();
+
+        machine.insertQuarter();
+        machine.turnCrank();
+
+        System.out.println(machine);
+    }
 }
