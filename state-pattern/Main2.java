@@ -8,6 +8,8 @@ interface State {
     void turnCrank();
 
     void dispense();
+
+    void refil();
 }
 
 class GumballMachine {
@@ -58,6 +60,12 @@ class GumballMachine {
             count--;
         }
     }
+
+    void refil(int refilCount) {
+        this.count += refilCount;
+        System.out.println("Gumball machine is refilled its new count is " + this.count);
+        state.refil();
+    } 
 
     public State getNoQuarterState() {
         return noQuarterState;
@@ -136,6 +144,12 @@ class NoQuarterState implements State {
     public void dispense() {
         System.out.println("you need to pay first");
     }
+
+    @Override
+    public void refil() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'refil'");
+    }
 }
 
 class SoldOutState implements State {
@@ -164,6 +178,12 @@ class SoldOutState implements State {
     @Override
     public void dispense() {
         System.out.println("no gumball dispensed");
+    }
+
+    @Override
+    public void refil() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'refil'");
     }
 }
 
@@ -203,6 +223,12 @@ class HasQuarterState implements State {
     public void dispense() {
         System.out.println("No gumball dispensed");
     }
+
+    @Override
+    public void refil() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'refil'");
+    }
 }
 
 class SoldState implements State {
@@ -237,6 +263,11 @@ class SoldState implements State {
             System.out.println("Oops, out of gumball");
             gumballMachine.setState(gumballMachine.getSoldOutState());
         }
+    }
+
+    @Override
+    public void refil() {
+        gumballMachine.setState(gumballMachine.getNoQuarterState());
     }
 }
 
@@ -279,6 +310,12 @@ class WinnerState implements State {
                 gumballMachine.setState(gumballMachine.getSoldOutState());
             }
         }
+    }
+
+    @Override
+    public void refil() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'refil'");
     }
 
 }
